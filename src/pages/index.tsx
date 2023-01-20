@@ -2,11 +2,24 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from "react";
 
 import { api } from "../utils/api";
 
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const [mounted, setMounted] = useState(false)
+  const { theme, setTheme } = useTheme()
+
+  // useEffect only runs on the client, so now we can safely show the UI
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
 
   return (
     <>
@@ -50,6 +63,12 @@ const Home: NextPage = () => {
             </p>
             <AuthShowcase />
           </div>
+          <select value={theme} onChange={e => setTheme(e.target.value)}>
+            <option value="system">System</option>
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+          </select>
+          <p>{theme}</p>
         </div>
       </main>
     </>
